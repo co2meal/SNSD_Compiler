@@ -1,0 +1,6 @@
+*.out
+*.exe
+lex.yy.c
+y.tab.*
+
+
