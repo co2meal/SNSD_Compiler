@@ -23,15 +23,15 @@ int vblno;
 %%
 
 statement_list
-: statement SEMICOLON
-| statement_list statement SEMICOLON
-| error SEMICOLON { print_error("syntax error"); }
+: statement
+| statement_list statement
 ;
 statement
-: expression { printf(" => %g\n", $1); }
-// | if_statement {}
+: expression SEMICOLON { printf(" => %g\n", $1); }
+// | if_statement SEMICOLON {}
 // | while_statement {} etc...
 | {}
+| error SEMICOLON { print_error("syntax error"); }
 ;
 expression
 : expression PLUS expression { $$ = $1 + $3; }
