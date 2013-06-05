@@ -1,8 +1,8 @@
 %option noyywrap
 
-
-
 %{
+#include "value.h"
+#include "node.h"
 #include "y.tab.h"
 #include <math.h>
 extern double vbltable[26];
@@ -12,19 +12,6 @@ extern int statement_depth;
 
 #define YY_INPUT(buf,result,max_size) result = get_input(buf, max_size);
 #define MAXTABLENUM 100
-
-typedef enum { INTVALUE, DOUBLEVALUE } tagVariableType;
-
-typedef struct _variable {
-  tagVariableType type;
-  union {
-    int intValue;
-    double doubleValeu;
-  };
-} variable;
-
-variable variableTable[MAXTABLENUM];
-
 
 static int get_input(char *buf, int size)
 {
@@ -61,9 +48,8 @@ static int get_input(char *buf, int size)
 
 %}
 %%
-([0-9]+|([0-9]*\.[0-9]+)) {
-yylval.dval = atof(yytext); return NUMBER;
-}
+(0|[1-9][0-9]*) { yylval.string = (char*) malloc(yyleng * sizeof(char)); strcpy(yylval.string, yytext); return INTEGER; }
+((0|[1-9][0-9]*)\.[0-9]+) { yylval.string = (char*) malloc(yyleng * sizeof(char)); strcpy(yylval.string, yytext); return DOUBLE; }
 [ \t\n] ; /* ignore white space */
 
 "<="     { return(LE_OP); }
@@ -86,6 +72,6 @@ yylval.dval = atof(yytext); return NUMBER;
 "while"  { return(WHILE); }
 "end"    { return(END);}
 "$"      { return 0; /* end of input */ }
-[_A-Za-z][_A-Za-z0-9]* { yylval.vblno = string2idx(yytext); return NAME; }
+[_A-Za-z][_A-Za-z0-9]* { yylval.string = (char*) malloc(yyleng * sizeof(char)); strcpy(yylval.string, yytext); return IDENTIFIER; }
 . {print_error("lexical error"); }
 %%

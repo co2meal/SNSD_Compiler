@@ -1,44 +1,49 @@
 %{
 #include <stdio.h>
 #include <string.h>
-extern char yytext[];	// a string of current token
+#include <stdlib.h>
+#include "value.h"
+#include "node.h"
 extern FILE* yyin;
 extern int yylineno;
-double vbltable[1000];
-char idx2stringtable[1000][100];
-int n_of_idx2stringtable = 0;
+
 int statement_depth = 0;
 %}
+
 %union {
-double dval;
-int vblno;
+  Node* pNode;
+  char* string;
 }
 
-%token <vblno> NAME
-%token <dval> NUMBER
-%token IF ELSE WHILE RETURN SEMICOLON PLUS MINUS DIVIDE MULTIPLY LPAREN RPAREN ASSIGN END
+%token<string> IDENTIFIER INTEGER DOUBLE
+%token IF ELSE WHILE END
+%token RETURN SEMICOLON ASSIGN
+%token PLUS MINUS DIVIDE MULTIPLY
+%token LPAREN RPAREN
 %token L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 
-%left '<' '>'
+%left L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 %left MINUS PLUS
 %left MULTIPLY DIVIDE
 %right ASSIGN
 %nonassoc UMINUS
 
-%type <dval> expression statement
+%type <pNode> expression statement identifier
 %%
 
 statement_list
 : statement
-| statement_list statement
+| statement_list statement {}
 | {}
 ;
 
 statement
-: start_of_statement expression SEMICOLON end_of_statement { printf(" => %g\n", $2); }
+// : start_of_statement expression SEMICOLON end_of_statement { printf(" => %g\n", $2.doubleValue); }
+: start_of_statement expression SEMICOLON end_of_statement { printf("statement reduce!\n"); Value value; evaluate($2, &value); print_value(&value); }
 | start_of_statement if_statement end_of_statement {printf("if\n") }
 | start_of_statement while_statement end_of_statement {printf(" while\n");}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
+| SEMICOLON {}
 ;
 
 start_of_statement
@@ -48,30 +53,26 @@ end_of_statement
 : { statement_depth --;}
 
 expression
-: expression PLUS expression { $$ = $1 + $3; }
-| expression MINUS expression { $$ = $1 - $3; }
-| expression MULTIPLY expression { $$ = $1 * $3; }
-| expression DIVIDE expression
-{
-  if($3 == 0.0) {
-    print_error("divide by zero");
-  }
-  else {
-    $$ = $1 / $3;
-  }
-}
-| NAME ASSIGN expression { $$ = vbltable[$1] = $3; }
-| MINUS expression %prec UMINUS { $$ = -$2; }
-| LPAREN expression RPAREN { $$ = $2; }
-| NUMBER
-| NAME { $$ = vbltable[$1]; }
-| expression G_OP expression { $$ = $1 > $3; }
-| expression L_OP expression { $$ = $1 < $3; }
-| expression LE_OP expression { $$ = $1 <= $3; }
-| expression GE_OP expression { $$ = $1 >= $3; }
-| expression EQ_OP expression { $$ = $1 == $3; }
-| expression NE_OP expression { $$ = $1 != $3; }
+: expression PLUS expression { }
+| expression MINUS expression { }
+| expression MULTIPLY expression { }
+| expression DIVIDE expression { }
+| identifier ASSIGN expression { printf("assignement reduced!\n");init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
+| MINUS expression %prec UMINUS { }
+| LPAREN expression RPAREN { }
+| INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
+| DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1); printf("$$->value.doubleValue: %lf\n", $$->value.doubleValue);}
+| identifier
+// | expression G_OP expression { $$.doubleValue = $1.doubleValue > $3.doubleValue; }
+// | expression L_OP expression { $$.doubleValue = $1.doubleValue < $3.doubleValue; }
+// | expression LE_OP expression { $$.doubleValue = $1.doubleValue <= $3.doubleValue; }
+// | expression GE_OP expression { $$.doubleValue = $1.doubleValue >= $3.doubleValue; }
+// | expression EQ_OP expression { $$.doubleValue = $1.doubleValue == $3.doubleValue; }
+// | expression NE_OP expression { $$.doubleValue = $1.doubleValue != $3.doubleValue; }
 ;
+
+identifier
+: IDENTIFIER { printf("identifier reduced!\n");init_node(&$$, NTIDENTIFIER); strcpy($$->name, $1); free($1); }
 
 if_statement
 : IF LPAREN expression RPAREN statement_list END
@@ -84,6 +85,7 @@ while_statement
 
 int main()
 {
+  printf("%d\n", (int)sizeof(Node));
 	yyparse();
 	
 	return 0;
@@ -98,16 +100,3 @@ int print_error(char *msg) {
   printf("%s\n",msg);
 }
 
-int string2idx(char* str) {
-  int i;
-  for(i=0;i<n_of_idx2stringtable;i++) {
-    if (strcmp(idx2stringtable[i], str) == 0) break;
-  }
-
-  if (i == n_of_idx2stringtable) {
-    strcpy(idx2stringtable[i], str);
-    n_of_idx2stringtable++;
-  }
-
-  return i;
-}
