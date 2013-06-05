@@ -7,6 +7,7 @@ extern int yylineno;
 double vbltable[1000];
 char idx2stringtable[1000][100];
 int n_of_idx2stringtable = 0;
+int statement_depth = 0;
 %}
 %union {
 double dval;
@@ -25,14 +26,19 @@ int vblno;
 statement_list
 : statement
 | statement_list statement
+| {}
 ;
+
 statement
-: expression SEMICOLON { printf(" => %g\n", $1); }
+: start_of_statement expression SEMICOLON { printf(" => %g\n", $2); statement_depth -- ; }
 // | if_statement SEMICOLON {}
 // | while_statement {} etc...
-| {}
-| error SEMICOLON { print_error("syntax error"); }
+| error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
 ;
+
+start_of_statement
+: {statement_depth ++;}
+
 expression
 : expression PLUS expression { $$ = $1 + $3; }
 | expression MINUS expression { $$ = $1 - $3; }

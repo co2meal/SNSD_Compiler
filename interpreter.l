@@ -8,6 +8,7 @@
 extern double vbltable[26];
 extern char idx2stringtable[1000][100];
 extern int n_of_idx2stringtable;
+extern int statement_depth;
 
 
 #define YY_INPUT(buf,result,max_size) result = get_input(buf, max_size);
@@ -17,7 +18,17 @@ static int get_input(char *buf, int size)
   char line[100];
   if (feof(yyin))
     return YY_NULL;
-  printf("?- ");
+
+  if (statement_depth == 0) {
+    printf("?- ");
+  } else {
+    int i;
+    printf(">  ");
+    for (i = 0; i< statement_depth; i++) {
+      printf("    ");
+    }
+  }
+
   gets(line);
 
   if (!line)
