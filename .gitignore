@@ -4,5 +4,5 @@ lex.yy.c
 y.tab.*
 varexp_.l
 varexp_.y
-*.obj
+lex.yy.obj
 

@@ -10,8 +10,21 @@ extern char idx2stringtable[1000][100];
 extern int n_of_idx2stringtable;
 extern int statement_depth;
 
-
 #define YY_INPUT(buf,result,max_size) result = get_input(buf, max_size);
+#define MAXTABLENUM 100
+
+typedef enum { INTVALUE, DOUBLEVALUE } tagVariableType;
+
+typedef struct _variable {
+  tagVariableType type;
+  union {
+    int intValue;
+    double doubleValeu;
+  };
+} variable;
+
+variable variableTable[MAXTABLENUM];
+
 
 static int get_input(char *buf, int size)
 {
