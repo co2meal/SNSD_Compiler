@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "value.h"
 #include "node.h"
+#include "y.tab.h"
 
 Value vbltable[1000];
 char idx2stringtable[1000][100];
@@ -33,7 +35,22 @@ void evaluate(Node* pNode, Value* pValue) {
         evaluate(pNode->child_nodes[1], &rhs);
         set_variable(pNode->child_nodes[0]->name, rhs);
         *pValue = rhs;
-        printf("pNode->child_nodes[0]->name: %s\n", pNode->child_nodes[0]->name);
+      }
+      break;
+
+    case NTBINARYOPERATOR:
+      {
+        Value a, b;
+        evaluate(pNode->child_nodes[0], &a);
+        evaluate(pNode->child_nodes[1], &b);
+        switch (pNode->op_token) {
+          case PLUS:
+        printf("hello\n");
+            add_value(pValue, a,b);
+            break;
+          case MINUS:
+            break;
+        }
       }
       break;
 

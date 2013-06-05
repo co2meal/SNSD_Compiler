@@ -22,10 +22,10 @@ int statement_depth = 0;
 %token LPAREN RPAREN
 %token L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 
+%right ASSIGN
 %left L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 %left MINUS PLUS
 %left MULTIPLY DIVIDE
-%right ASSIGN
 %nonassoc UMINUS
 
 %type <pNode> expression statement identifier
@@ -53,7 +53,7 @@ end_of_statement
 : { statement_depth --;}
 
 expression
-: expression PLUS expression { }
+: expression PLUS expression { printf("add operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3); }
 | expression MINUS expression { }
 | expression MULTIPLY expression { }
 | expression DIVIDE expression { }
