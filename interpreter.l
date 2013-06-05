@@ -80,10 +80,11 @@ yylval.dval = atof(yytext); return NUMBER;
 "("      { return(LPAREN); }
 ")"      { return(RPAREN); }
 ";"      { return(SEMICOLON); }
-"else"   {  return(ELSE); }
+"else"   { return(ELSE); }
 "if"     { return(IF); }
 "return" { return(RETURN); }
-"while"	 { return(WHILE); }
+"while"  { return(WHILE); }
+"end"    { return(END);}
 "$"      { return 0; /* end of input */ }
 [_A-Za-z][_A-Za-z0-9]* { yylval.vblno = string2idx(yytext); return NAME; }
 . {print_error("lexical error"); }

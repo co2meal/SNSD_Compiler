@@ -16,10 +16,14 @@ int vblno;
 
 %token <vblno> NAME
 %token <dval> NUMBER
+<<<<<<< HEAD
 %token IF ELSE WHILE RETURN SEMICOLON PLUS MINUS DIVIDE MULTIPLY LPAREN RPAREN ASSIGN
 %token L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 
 %left '<' '>'
+=======
+%token IF ELSE WHILE RETURN SEMICOLON PLUS MINUS DIVIDE MULTIPLY LPAREN RPAREN ASSIGN END
+>>>>>>> if statement, while statement, end token
 %left MINUS PLUS
 %left MULTIPLY DIVIDE
 %right ASSIGN
@@ -36,8 +40,9 @@ statement_list
 
 statement
 : start_of_statement expression SEMICOLON { printf(" => %g\n", $2); statement_depth -- ; }
-// | if_statement SEMICOLON {}
-// | while_statement {} etc...
+| start_of statement if_statement {printf("if\n")}
+| start_of_statement while_statement {printf(" while\n");}
+| {}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
 ;
 
@@ -69,6 +74,13 @@ expression
 | expression EQ_OP expression { $$ = $1 == $3; }
 | expression NE_OP expression { $$ = $1 != $3; }
 ;
+
+if_statement
+: IF LPAREN expression RPAREN statement_list END
+| IF LPAREN expression RPAREN statement_list ELSE statement_list END
+
+while_statement
+: WHILE LPAREN expression RPAREN statement_list END
 
 %%
 
