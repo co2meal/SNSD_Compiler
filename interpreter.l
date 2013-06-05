@@ -41,19 +41,24 @@ static int get_input(char *buf, int size)
 yylval.dval = atof(yytext); return NUMBER;
 }
 [ \t\n] ; /* ignore white space */
-"+"         { return(PLUS); }
-"-"         { return(MINUS); }
-"*"         { return(MULTIPLY); }
-"/"         { return(DIVIDE); }
-"="         { return(ASSIGN); }
-"("         { return(LPAREN); }
-")"         { return(RPAREN); }
-";"         { return(SEMICOLON); }
-"else"			{  return(ELSE); }
-"if"			{ return(IF); }
-"return"			{ return(RETURN); }
-"while"			{ return(WHILE); }
-"$" { return 0; /* end of input */ }
+
+"<="     { return(LE_OP); }
+">="     { return(GE_OP); }
+"=="     { return(EQ_OP); }
+"!="     { return(NE_OP); }
+"+"      { return(PLUS); }
+"-"      { return(MINUS); }
+"*"      { return(MULTIPLY); }
+"/"      { return(DIVIDE); }
+"="      { return(ASSIGN); }
+"("      { return(LPAREN); }
+")"      { return(RPAREN); }
+";"      { return(SEMICOLON); }
+"else"   {  return(ELSE); }
+"if"     { return(IF); }
+"return" { return(RETURN); }
+"while"	 { return(WHILE); }
+"$"      { return 0; /* end of input */ }
 [_A-Za-z][_A-Za-z0-9]* { yylval.vblno = string2idx(yytext); return NAME; }
 . {print_error("lexical error"); }
 %%

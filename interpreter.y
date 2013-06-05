@@ -12,13 +12,17 @@ int n_of_idx2stringtable = 0;
 double dval;
 int vblno;
 }
+
 %token <vblno> NAME
 %token <dval> NUMBER
 %token IF ELSE WHILE RETURN SEMICOLON PLUS MINUS DIVIDE MULTIPLY LPAREN RPAREN ASSIGN
+
+%left '<' '>'
 %left MINUS PLUS
 %left MULTIPLY DIVIDE
 %right ASSIGN
 %nonassoc UMINUS
+
 %type <dval> expression statement
 %%
 
@@ -26,6 +30,7 @@ statement_list
 : statement
 | statement_list statement
 ;
+
 statement
 : expression SEMICOLON { printf(" => %g\n", $1); }
 // | if_statement SEMICOLON {}
@@ -33,6 +38,7 @@ statement
 | {}
 | error SEMICOLON { print_error("syntax error"); }
 ;
+
 expression
 : expression PLUS expression { $$ = $1 + $3; }
 | expression MINUS expression { $$ = $1 - $3; }
@@ -51,7 +57,14 @@ expression
 | LPAREN expression RPAREN { $$ = $2; }
 | NUMBER
 | NAME { $$ = vbltable[$1]; }
+| expression '<' expression { $$ = $1 < $3; }
+| expression '>' expression { $$ = $1 > $3; }
+| expression LE_OP expression { $$ = $1 <= $3; }
+| expression GE_OP expression { $$ = $1 >= $3; }
+| expression EQ_OP expression { $$ = $1 == $3; }
+| expression NE_OP expression { $$ = $1 != $3; }
 ;
+
 %%
 
 int main()

@@ -2,5 +2,6 @@
 *.exe
 lex.yy.c
 y.tab.*
-
+varexp_.l
+varexp_.y
 
