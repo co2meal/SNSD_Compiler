@@ -35,15 +35,17 @@ statement_list
 ;
 
 statement
-: start_of_statement expression SEMICOLON { printf(" => %g\n", $2); statement_depth -- ; }
-| start_of statement if_statement {printf("if\n")}
-| start_of_statement while_statement {printf(" while\n");}
-| {}
+: start_of_statement expression SEMICOLON end_of_statement { printf(" => %g\n", $2); }
+| start_of_statement if_statement end_of_statement {printf("if\n") }
+| start_of_statement while_statement end_of_statement {printf(" while\n");}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
 ;
 
 start_of_statement
-: {statement_depth ++;}
+: { statement_depth ++;}
+
+end_of_statement
+: { statement_depth --;}
 
 expression
 : expression PLUS expression { $$ = $1 + $3; }
