@@ -6,6 +6,13 @@ SNSD_Compiler
 
 ------
 
+컴파일 && 실행하는 방법
+
+`$ make && ./interpreter.exe`
+
+
+------
+
 과제 문서
 
 i-lang은 간단한 interpreter형 언어이다. i-lang의 문법은 기본적으로 C언어와 유사하나 몇몇 구문은 차이가 있다. i-lang의 문법에 대해서는 2절에서 자세하게 설명한다. 본 과제에서는 i-lang을 위한 interpreter를 개발한다. 인터프리터는 두 단계로 실행되는데, 일단 단위(문장 또는 함수)별로 코드를 syntax tree로 변경한 후,  즉시 인터프리트하여 그 결과를 보여준다.
