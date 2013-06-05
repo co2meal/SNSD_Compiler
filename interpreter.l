@@ -46,6 +46,8 @@ yylval.dval = atof(yytext); return NUMBER;
 ">="     { return(GE_OP); }
 "=="     { return(EQ_OP); }
 "!="     { return(NE_OP); }
+"<"      { return(L_OP); }
+">"      { return(G_OP); }
 "+"      { return(PLUS); }
 "-"      { return(MINUS); }
 "*"      { return(MULTIPLY); }

@@ -16,6 +16,7 @@ int vblno;
 %token <vblno> NAME
 %token <dval> NUMBER
 %token IF ELSE WHILE RETURN SEMICOLON PLUS MINUS DIVIDE MULTIPLY LPAREN RPAREN ASSIGN
+%token L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 
 %left '<' '>'
 %left MINUS PLUS
@@ -57,8 +58,8 @@ expression
 | LPAREN expression RPAREN { $$ = $2; }
 | NUMBER
 | NAME { $$ = vbltable[$1]; }
-| expression '<' expression { $$ = $1 < $3; }
-| expression '>' expression { $$ = $1 > $3; }
+| expression G_OP expression { $$ = $1 > $3; }
+| expression L_OP expression { $$ = $1 < $3; }
 | expression LE_OP expression { $$ = $1 <= $3; }
 | expression GE_OP expression { $$ = $1 >= $3; }
 | expression EQ_OP expression { $$ = $1 == $3; }
