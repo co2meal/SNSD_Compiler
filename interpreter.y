@@ -39,7 +39,7 @@ statement_list
 
 statement
 // : start_of_statement expression SEMICOLON end_of_statement { printf(" => %g\n", $2.doubleValue); }
-: start_of_statement expression SEMICOLON end_of_statement { printf("statement reduce!\n"); Value value; evaluate($2, &value); print_value(&value); }
+: start_of_statement expression SEMICOLON end_of_statement { Value value; printf("statement reduce!\n"); evaluate($2, &value); print_value(&value); }
 | start_of_statement if_statement end_of_statement {printf("if\n") }
 | start_of_statement while_statement end_of_statement {printf(" while\n");}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
@@ -54,7 +54,7 @@ end_of_statement
 
 expression
 : expression PLUS expression { printf("add operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3); }
-| expression MINUS expression { }
+| expression MINUS expression { printf("sub operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
 | expression MULTIPLY expression { }
 | expression DIVIDE expression { }
 | identifier ASSIGN expression { printf("assignement reduced!\n");init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}

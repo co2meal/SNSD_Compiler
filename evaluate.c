@@ -49,6 +49,7 @@ void evaluate(Node* pNode, Value* pValue) {
             add_value(pValue, a,b);
             break;
           case MINUS:
+            sub_value(pValue, a,b);
             break;
         }
       }
