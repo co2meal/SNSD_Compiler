@@ -1,1 +1,1 @@
-flex interpreter.l && bison interpreter.y -d -b y && cl value.c node.c function.c evaluate.c lex.yy.c y.tab.c /Feinter && inter.exe
+flex interpreter.l && bison interpreter.y -d -b y && cl frame.c value.c node.c function.c evaluate.c lex.yy.c y.tab.c /Feinter && inter.exe

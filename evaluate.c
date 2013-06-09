@@ -235,5 +235,6 @@ char* getValueType(tagValueType type) {
     case STATEMENTVALUE: return "statement value";
     case FUNCTIONVALUE: return "Function value";
     case ERRORVALUE: return "Error value";
+    default: return "unknown value";
   }
 }
