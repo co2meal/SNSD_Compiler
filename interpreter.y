@@ -62,7 +62,7 @@ expression
 | expression DIVIDE expression {  printf("div operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = DIVIDE; push_child_node($$, $1); push_child_node($$, $3);}
 | identifier ASSIGN expression { printf("assignement reduced!\n");init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
 | MINUS expression %prec UMINUS { }
-| LPAREN expression RPAREN { }
+| LPAREN expression RPAREN { $$ = $2; }
 | INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
 | DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1); printf("$$->value.doubleValue: %lf\n", $$->value.doubleValue);}
 | identifier
