@@ -44,7 +44,7 @@ statement_list
 statement
 : start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
 | start_of_statement if_statement end_of_statement { $$ = $2; }
-| start_of_statement while_statement end_of_statement {printf(" while\n");}
+| start_of_statement while_statement end_of_statement { $$ = $2;}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
 | SEMICOLON {}
 ;
@@ -82,7 +82,7 @@ if_statement
 | IF LPAREN expression RPAREN statement_list ELSE statement_list END
 
 while_statement
-: WHILE LPAREN expression RPAREN statement_list END
+: WHILE LPAREN expression RPAREN statement_list END { init_node(&$$, NTWHILESTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
 
 %%
 

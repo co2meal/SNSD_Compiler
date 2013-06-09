@@ -74,7 +74,8 @@ void evaluate(Node* pNode, Value* pValue) {
     case NTIFSTATEMENT:
       {
         Value test, temp;
-        evaluate(pNode->child_nodes[0], &test);
+        evaluate(pNode->child_nodes[0], &temp);
+        test_value(&test, temp);
 
         if (test.type == INTVALUE && test.intValue) {
           evaluate(pNode->child_nodes[1], &temp);
@@ -83,6 +84,25 @@ void evaluate(Node* pNode, Value* pValue) {
         }
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "if";
+      }
+      break;
+
+    case NTWHILESTATEMENT:
+      {
+        Value test, temp;
+
+        while (1) {
+          evaluate(pNode->child_nodes[0], &temp);
+          test_value(&test, temp);
+
+          if (!(test.type == INTVALUE && test.intValue)) break;
+
+          printf("AAAA  - %d\n", test.intValue);
+          evaluate(pNode->child_nodes[1], &temp);
+        } 
+
+        pValue->type = STATEMENTVALUE;
+        pValue->statementValue = "while";
       }
       break;
 
@@ -111,6 +131,10 @@ Value get_variable (char* identifier) {
 
 void set_variable (char* identifier, Value value) {
   int i;
+
+  printf("ASSIGNMENT - %s = \n", identifier);
+  print_value(&value);
+
   for(i=0;i<n_of_idx2stringtable;i++) {
     if (strcmp(idx2stringtable[i], identifier) == 0)
       break;
