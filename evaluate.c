@@ -99,14 +99,20 @@ void evaluate(Node* pNode, Value* pValue) {
     case NTIFSTATEMENT:
       {
         Value test, temp;
+        printf("called 0 \n");
         evaluate(pNode->child_nodes[0], &temp);
         test_value(&test, temp);
 
-        if (test.type == INTVALUE && test.intValue) {
+        printf("called 1 \n");
+        if ( (test.type == INTVALUE) && (test.intValue == 1) ) {
           evaluate(pNode->child_nodes[1], &temp);
         } else if (pNode->n_of_child_nodes == 3) {
           evaluate(pNode->child_nodes[2], &temp);
         }
+        else {
+          printf("called\n");
+        }
+
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "if";
       }

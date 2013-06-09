@@ -85,7 +85,7 @@ identifier
 
 if_statement
 : IF LPAREN expression RPAREN statement_list END { init_node(&$$, NTIFSTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
-| IF LPAREN expression RPAREN statement_list ELSE statement_list END {}
+| IF LPAREN expression RPAREN statement_list ELSE statement_list END {init_node(&$$, NTIFSTATEMENT); push_child_node($$, $3); push_child_node($$, $5); push_child_node($$, $7); }
 
 while_statement
 : WHILE LPAREN expression RPAREN statement_list END { init_node(&$$, NTWHILESTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
