@@ -5,11 +5,9 @@
 #include "node.h"
 #include "function.h"
 
-Function* create_function(Node* pl, Node* sl) {
-  Function* res =(Function*) malloc((size_t) sizeof(Function));
+void create_function(Function** ppFunction, Node* pl, Node* sl) {
+  *ppFunction = (Function*) malloc((size_t) sizeof(Function));
 
-  res->parameter_list = pl;
-  res->statement_list = sl;
-
-  return res;
+  (*ppFunction)->parameter_list = pl;
+  (*ppFunction)->statement_list = sl;
 }

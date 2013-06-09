@@ -4,22 +4,10 @@
 #include "value.h"
 #include "node.h"
 #include "function.h"
+#include "frame.h"
 #include "y.tab.h"
 
-#define MAX_VARIABLE_NAME    100
-#define MAX_GLOBAL_VARIABLES 1000
-#define MAX_LOCAL_VARIABLES  100
-#define MAX_FRAME_STACK_SIZE 1000
-
 char* getValueType(tagValueType type); 
-
-typedef struct Frame {
-  int idx;
-  int n_of_local_variables;
-  char local_variables_name[MAX_LOCAL_VARIABLES][MAX_VARIABLE_NAME];
-  Value local_variables_value[MAX_LOCAL_VARIABLES];
-  Value* pReturnValue;
-} Frame;
 
 Frame frame_stack[MAX_FRAME_STACK_SIZE];
 int top_of_frame_stack = -1;
@@ -138,12 +126,38 @@ void evaluate(Node* pNode, Value* pValue) {
       {
         Function* pFn;
         Value value;
-        pFn = create_function(pNode->child_nodes[1], pNode->child_nodes[2]);
+        create_function(&pFn, pNode->child_nodes[1], pNode->child_nodes[2]);
         value.type = FUNCTIONVALUE;
         value.functionValue = pFn;
+
         set_variable(pNode->child_nodes[0]->name, value);
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "a function is defined.";
+      }
+      break;
+
+    case NTFUNCCALL:
+      {
+        int i;
+        Value value;
+        Function* pFn;
+        Node* expression_list;
+        Node* statement_list;
+        value = get_variable(pNode->child_nodes[0]->name);
+        expression_list = pNode->child_nodes[1];
+
+        if (value.type != FUNCTIONVALUE) {
+          pValue->type = ERRORVALUE;
+          pValue->errorValue = "no function name error";
+        } else {
+          Value temp;
+
+          pFn = value.functionValue;
+          top_of_frame_stack ++;
+          init_frame(&frame_stack[top_of_frame_stack], pValue, pFn, expression_list);
+
+          evaluate(statement_list, &temp);
+        }
       }
       break;
 

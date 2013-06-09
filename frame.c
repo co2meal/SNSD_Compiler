@@ -1,0 +1,40 @@
+#include <string.h>
+
+#include "value.h"
+#include "node.h"
+#include "function.h"
+#include "frame.h"
+
+void register_local_frame(Frame* pFrame, char* identifier) {
+  int idx = pFrame->n_of_local_variables;
+  Value value;
+  value.type = ERRORVALUE;
+  value.errorValue = "undefined variable error";
+
+  strcpy(pFrame->local_variables_name[idx], identifier);
+  pFrame->local_variables_value[idx] = value;
+  pFrame->n_of_local_variables++;
+}
+
+void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* expression_list) {
+  int i;
+    printf("hello \n");
+
+  pFrame->n_of_local_variables = 0;
+  pFrame->pReturnValue = pReturnValue;
+    printf("hello \n");
+
+  // TODO(co2meal): handle error when different expression_list length and parameter_list length
+
+  printf("haha %d\n", pFn->parameter_list->n_of_child_nodes);
+  for(i=0; i < pFn->parameter_list->n_of_child_nodes; i++) {
+    Value value;
+    char* identifier = pFn->parameter_list->child_nodes[i]->name;
+    printf("hello \n");
+    register_local_frame(pFrame, identifier);
+
+    evaluate(expression_list->child_nodes[i], &value);
+    set_variable(identifier, value);
+  }
+
+}
