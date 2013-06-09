@@ -104,6 +104,10 @@ void evaluate(Node* pNode, Value* pValue) {
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "while";
       }
+    case  NTFUNCDECLARE:
+    {
+      
+    } 
       break;
 
     default:

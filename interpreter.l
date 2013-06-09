@@ -71,6 +71,8 @@ static int get_input(char *buf, int size)
 "return" { return(RETURN); }
 "while"  { return(WHILE); }
 "end"    { return(END);}
+"def"    { return (DEF);}
+","      { return (COMMA);}
 "$"      { return 0; /* end of input */ }
 [_A-Za-z][_A-Za-z0-9]* { yylval.string = (char*) malloc(yyleng * sizeof(char)); strcpy(yylval.string, yytext); return IDENTIFIER; }
 . {print_error("lexical error"); }
