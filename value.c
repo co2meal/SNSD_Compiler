@@ -6,14 +6,17 @@ void print_value(Value* pValue) {
     printf("INTVALUE-%d\n", pValue->intValue);
   } else if (pValue->type == DOUBLEVALUE) {
     printf("DOUBLEVALUE-%g\n", pValue->doubleValue);
+  } else if (pValue->type == STATEMENTVALUE) {
+    printf("STATEMENTVALUE-%s\n", pValue->statementValue);
   } else if (pValue->type == ERRORVALUE) {
     printf("ERRORVALUE-%s\n", pValue->errorValue);
   } else {
-    printf("QQQQ-!!\n");
+    printf("UNKNOWNVALUE-T.T-%d\n", pValue->type);
   }
 }
 
 void add_value(Value* pValue, Value a, Value b) {
+
   Value result;
   if (a.type == ERRORVALUE) {
     *pValue = a;

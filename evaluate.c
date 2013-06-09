@@ -45,7 +45,6 @@ void evaluate(Node* pNode, Value* pValue) {
         evaluate(pNode->child_nodes[1], &b);
         switch (pNode->op_token) {
           case PLUS:
-        printf("hello\n");
             add_value(pValue, a,b);
             break;
           case MINUS:
@@ -58,6 +57,14 @@ void evaluate(Node* pNode, Value* pValue) {
             div_value(pValue, a, b);
             break;
         }
+      }
+      break;
+
+    case NTSTATEMENT:
+      {
+        Value temp;
+        evaluate(pNode->child_nodes[0], &temp);
+        *pValue = temp;
       }
       break;
 

@@ -28,18 +28,22 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier
+%type <pNode> expression statement identifier statement_list
 %%
 
+program
+: statement { Value value; evaluate($1, &value); printf(" type of value = %d\n", value.type);print_value(&value); }
+| program statement { Value value; evaluate($2, &value); print_value(&value); }
+;
+
 statement_list
-: statement
-| statement_list statement {}
-| {}
+: statement { init_node(&$$, NTSTATEMENTLIST); push_child_node($$, $1); }
+| statement_list statement { $$ = $1; push_child_node($$, $2); }
+|
 ;
 
 statement
-// : start_of_statement expression SEMICOLON end_of_statement { printf(" => %g\n", $2.doubleValue); }
-: start_of_statement expression SEMICOLON end_of_statement { Value value; printf("statement reduce!\n"); evaluate($2, &value); print_value(&value); }
+: start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
 | start_of_statement if_statement end_of_statement {printf("if\n") }
 | start_of_statement while_statement end_of_statement {printf(" while\n");}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
