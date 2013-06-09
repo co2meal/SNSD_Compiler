@@ -7,6 +7,7 @@
 void init_node(Node** ppNode, tagNodeType type) {
   *ppNode = (Node*)malloc((size_t) sizeof (Node));
   (*ppNode)->type = type;
+  (*ppNode)->n_of_child_nodes = 0;
 }
 
 void push_child_node(Node* pNode, Node* pChildNode) {

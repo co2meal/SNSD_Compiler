@@ -53,7 +53,7 @@ end_of_statement
 : { statement_depth --;}
 
 expression
-: expression PLUS expression { printf("add operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3); }
+: expression PLUS expression { printf("add operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3);}
 | expression MINUS expression { printf("sub operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
 | expression MULTIPLY expression { }
 | expression DIVIDE expression { }
@@ -76,6 +76,10 @@ identifier
 
 if_statement
 : IF LPAREN expression RPAREN statement_list END
+{
+  if($3)
+    printf("true!");
+}
 | IF LPAREN expression RPAREN statement_list ELSE statement_list END
 
 while_statement
