@@ -43,20 +43,7 @@ void evaluate(Node* pNode, Value* pValue) {
         Value a, b;
         evaluate(pNode->child_nodes[0], &a);
         evaluate(pNode->child_nodes[1], &b);
-        switch (pNode->op_token) {
-          case PLUS:
-            add_value(pValue, a,b);
-            break;
-          case MINUS:
-            sub_value(pValue, a,b);
-            break;
-          case MULTIPLY:
-            mul_value(pValue, a, b);
-            break;
-          case DIVIDE:
-            div_value(pValue, a, b);
-            break;
-        }
+        cal_value(pValue, a, b,pNode->op_token);
       }
       break;
 

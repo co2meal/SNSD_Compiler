@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "value.h"
+#include "node.h"
+#include "y.tab.h"
 
-void print_value(Value* pValue) {
+void print_value(Value* pValue) { 
   if (pValue->type == INTVALUE) {
     printf("INTVALUE-%d\n", pValue->intValue);
   } else if (pValue->type == DOUBLEVALUE) {
@@ -14,7 +16,7 @@ void print_value(Value* pValue) {
     printf("UNKNOWNVALUE-T.T-%d\n", pValue->type);
   }
 }
-
+/*
 void add_value(Value* pValue, Value a, Value b) {
   Value result;
   if (a.type == ERRORVALUE) {
@@ -121,7 +123,10 @@ void div_value(Value* pValue, Value a, Value b) {
 
   if (a.type == INTVALUE && b.type == INTVALUE) {
     result.type = INTVALUE;
-    result.intValue = a.intValue / b.intValue;
+    if(b.intValue ==0)
+      result.intValue = 0; 
+    else
+      result.intValue = a.intValue / b.intValue;
   } else {
     if (a.type == INTVALUE) {
       a.type = DOUBLEVALUE;
@@ -133,9 +138,63 @@ void div_value(Value* pValue, Value a, Value b) {
     }
 
     result.type = DOUBLEVALUE;
-    result.doubleValue = a.doubleValue / b.doubleValue;
+    if(b.doubleValue == 0.0)
+      result.doubleValue = 0.0;
+    else
+      result.doubleValue = a.doubleValue / b.doubleValue;
   }
 
+  *pValue = result;
+}
+*/
+void cal_value(Value* pValue, Value a, Value b, int op_token) {
+  Value result;
+  if (a.type == ERRORVALUE) {
+    *pValue = a;
+    return;
+  }
+  if (b.type == ERRORVALUE) {
+    *pValue = b;
+    return;
+  }
+
+  if (a.type == INTVALUE && b.type == INTVALUE) {
+    result.type = INTVALUE;
+    switch(op_token)
+    {
+      case PLUS :     result.intValue = a.intValue +  b.intValue; break;
+      case MINUS :    result.intValue = a.intValue -  b.intValue; break;
+      case MULTIPLY : result.intValue = a.intValue *  b.intValue; break;
+      case DIVIDE :   result.intValue = a.intValue /  b.intValue; break;
+      case G_OP :     result.intValue = a.intValue >  b.intValue; break;
+      case L_OP :     result.intValue = a.intValue <  b.intValue; break;
+      case GE_OP :    result.intValue = a.intValue >= b.intValue; break;
+      case LE_OP :    result.intValue = a.intValue <= b.intValue; break;
+      case EQ_OP :    result.intValue = a.intValue == b.intValue; break;
+      case NE_OP :    result.intValue = a.intValue != b.intValue; break;     
+    }
+  } 
+  else {
+    if (a.type == INTVALUE)
+    { a.type = DOUBLEVALUE; a.doubleValue = (double)a.intValue; }
+    if (b.type == INTVALUE) 
+    { b.type = DOUBLEVALUE; b.doubleValue = (double)b.intValue; }
+
+    result.type = DOUBLEVALUE;
+    switch(op_token)
+    {
+      case PLUS :     result.doubleValue = a.doubleValue +  b.doubleValue; break;
+      case MINUS :    result.doubleValue = a.doubleValue -  b.doubleValue; break;
+      case MULTIPLY : result.doubleValue = a.doubleValue *  b.doubleValue; break;
+      case DIVIDE :   result.doubleValue = a.doubleValue /  b.doubleValue; break;
+      case G_OP :     result.doubleValue = a.doubleValue >  b.doubleValue; break;
+      case L_OP :     result.doubleValue = a.doubleValue <  b.doubleValue; break;
+      case GE_OP :    result.doubleValue = a.doubleValue >= b.doubleValue; break;
+      case LE_OP :    result.doubleValue = a.doubleValue <= b.doubleValue; break;
+      case EQ_OP :    result.doubleValue = a.doubleValue == b.doubleValue; break;
+      case NE_OP :    result.doubleValue = a.doubleValue != b.doubleValue; break;     
+    }
+  }//else end
   *pValue = result;
 }
 
