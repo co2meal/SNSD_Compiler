@@ -28,7 +28,7 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier statement_list if_statement while_statement function_def_statement parameter_list statements parameters
+%type <pNode> expression statement identifier statement_list if_statement while_statement function_def_statement parameter_list statements parameters expression_list expressions
 %%
 
 program
@@ -61,6 +61,15 @@ start_of_statement
 end_of_statement
 : { statement_depth --;}
 
+expression_list
+: { init_node(&$$, NTEXPRESSIONLIST); }
+| expressions { $$ = $1; }
+
+expressions
+: expression { init_node(&$$, NTEXPRESSIONLIST); push_child_node($$, $1); }
+| expressions COMMA expression { $$ = $1; push_child_node($$, $3); }
+
+
 expression
 : expression PLUS expression     { init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3);}
 | expression MINUS expression    { init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
@@ -72,6 +81,7 @@ expression
 | INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
 | DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1); printf("$$->value.doubleValue: %lf\n", $$->value.doubleValue);}
 | identifier
+| identifier LPAREN expression_list RPAREN { init_node(&$$, NTFUNCCALL); push_child_node($$, $1); push_child_node($$, $3); }
 | expression G_OP expression  {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = G_OP; push_child_node($$, $1); push_child_node($$, $3);}
 | expression L_OP expression  {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = L_OP; push_child_node($$, $1); push_child_node($$, $3);}
 | expression LE_OP expression {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = LE_OP; push_child_node($$, $1); push_child_node($$, $3);}
