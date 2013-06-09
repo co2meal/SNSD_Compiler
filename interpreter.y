@@ -16,10 +16,10 @@ int statement_depth = 0;
 }
 
 %token<string> IDENTIFIER INTEGER DOUBLE
-%token IF ELSE WHILE END
+%token IF ELSE WHILE END DEF
 %token RETURN SEMICOLON ASSIGN
 %token PLUS MINUS DIVIDE MULTIPLY
-%token LPAREN RPAREN
+%token LPAREN RPAREN COMMA
 %token L_OP G_OP LE_OP GE_OP EQ_OP NE_OP
 
 %right ASSIGN
@@ -45,8 +45,9 @@ statement
 : start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
 | start_of_statement if_statement end_of_statement { $$ = $2; }
 | start_of_statement while_statement end_of_statement { $$ = $2;}
+| start_of_statement function_def_statement end_of_statement {}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0; init_node(&$$, NTSTATEMENT); }
-| SEMICOLON { printf("???"); init_node(&$$, NTSTATEMENT);}
+| SEMICOLON { init_node(&$$, NTSTATEMENT);}
 ;
 
 start_of_statement
@@ -83,6 +84,14 @@ if_statement
 
 while_statement
 : WHILE LPAREN expression RPAREN statement_list END { init_node(&$$, NTWHILESTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
+
+function_def_statement
+: DEF identifier LPAREN parameter_list RPAREN statement_list END { init_node(&$$, NTFUNCDECLARE); push_child_node($$, $2); push_child_node($$, $4);push_child_node($$, $6); }
+
+parameter_list
+: identifier { init_node(&$$, NTPARAMETERLIST); push_child_node($$, $1); }
+| parameter_list COMMA identifier { $$ = $1; push_child_node($$, $2); }
+;
 
 %%
 
