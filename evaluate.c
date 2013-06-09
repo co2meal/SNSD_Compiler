@@ -51,6 +51,12 @@ void evaluate(Node* pNode, Value* pValue) {
           case MINUS:
             sub_value(pValue, a,b);
             break;
+          case MULTIPLY:
+            mul_value(pValue, a, b);
+            break;
+          case DIVIDE:
+            div_value(pValue, a, b);
+            break;
         }
       }
       break;
@@ -59,6 +65,7 @@ void evaluate(Node* pNode, Value* pValue) {
       printf("not evaluated...\n");
   }
 }
+
 Value get_variable (char* identifier) {
   Value value;
   int i;

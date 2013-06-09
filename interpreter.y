@@ -55,14 +55,15 @@ end_of_statement
 expression
 : expression PLUS expression { printf("add operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3);}
 | expression MINUS expression { printf("sub operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
-| expression MULTIPLY expression { }
-| expression DIVIDE expression { }
+| expression MULTIPLY expression { printf("mul operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = MULTIPLY; push_child_node($$, $1); push_child_node($$, $3);}
+| expression DIVIDE expression {  printf("div operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = DIVIDE; push_child_node($$, $1); push_child_node($$, $3);}
 | identifier ASSIGN expression { printf("assignement reduced!\n");init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
 | MINUS expression %prec UMINUS { }
 | LPAREN expression RPAREN { }
 | INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
 | DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1); printf("$$->value.doubleValue: %lf\n", $$->value.doubleValue);}
 | identifier
+
 // | expression G_OP expression { $$.doubleValue = $1.doubleValue > $3.doubleValue; }
 // | expression L_OP expression { $$.doubleValue = $1.doubleValue < $3.doubleValue; }
 // | expression LE_OP expression { $$.doubleValue = $1.doubleValue <= $3.doubleValue; }
