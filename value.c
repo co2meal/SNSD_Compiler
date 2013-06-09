@@ -16,7 +16,6 @@ void print_value(Value* pValue) {
 }
 
 void add_value(Value* pValue, Value a, Value b) {
-
   Value result;
   if (a.type == ERRORVALUE) {
     *pValue = a;
@@ -135,6 +134,24 @@ void div_value(Value* pValue, Value a, Value b) {
 
     result.type = DOUBLEVALUE;
     result.doubleValue = a.doubleValue / b.doubleValue;
+  }
+
+  *pValue = result;
+}
+
+void test_value(Value* pValue, Value a) {
+  Value result;
+
+  result.type = INTVALUE;
+  if (a.type == INTVALUE) {
+    result.intValue = a.intValue != 0;
+  } else if (a.type == DOUBLEVALUE) {
+    result.intValue = a.doubleValue != 0.0;
+  } else if (a.type == ERRORVALUE) {
+    result = a;
+  } else {
+    result.type = ERRORVALUE;
+    result.errorValue = "invalid test.";
   }
 
   *pValue = result;

@@ -28,7 +28,7 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier statement_list
+%type <pNode> expression statement identifier statement_list if_statement while_statement
 %%
 
 program
@@ -39,12 +39,11 @@ program
 statement_list
 : statement { init_node(&$$, NTSTATEMENTLIST); push_child_node($$, $1); }
 | statement_list statement { $$ = $1; push_child_node($$, $2); }
-|
 ;
 
 statement
 : start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
-| start_of_statement if_statement end_of_statement {printf("if\n") }
+| start_of_statement if_statement end_of_statement { $$ = $2; }
 | start_of_statement while_statement end_of_statement {printf(" while\n");}
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
 | SEMICOLON {}
@@ -80,11 +79,7 @@ identifier
 : IDENTIFIER { printf("identifier reduced!\n");init_node(&$$, NTIDENTIFIER); strcpy($$->name, $1); free($1); }
 
 if_statement
-: IF LPAREN expression RPAREN statement_list END
-{
-  if($3)
-    printf("true!");
-}
+: IF LPAREN expression RPAREN statement_list END { init_node(&$$, NTIFSTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
 | IF LPAREN expression RPAREN statement_list ELSE statement_list END
 
 while_statement

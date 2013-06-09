@@ -60,11 +60,42 @@ void evaluate(Node* pNode, Value* pValue) {
       }
       break;
 
+    case NTSTATEMENTLIST:
+      {
+        int i;
+        Value temp;
+        for(i = 0; i < pNode->n_of_child_nodes; i++) {
+          evaluate(pNode->child_nodes[i], &temp);
+        }
+      }
+      break;
+
     case NTSTATEMENT:
       {
         Value temp;
-        evaluate(pNode->child_nodes[0], &temp);
-        *pValue = temp;
+
+        if (pNode->n_of_child_nodes > 0) {
+          evaluate(pNode->child_nodes[0], &temp);
+          *pValue = temp;
+        } else {
+          pValue->type = STATEMENTVALUE;
+          pValue->statementValue = "empty statement";
+        }
+      }
+      break;
+
+    case NTIFSTATEMENT:
+      {
+        Value test, temp;
+        evaluate(pNode->child_nodes[0], &test);
+
+        if (test.type == INTVALUE && test.intValue) {
+          evaluate(pNode->child_nodes[1], &temp);
+        } else if (pNode->n_of_child_nodes == 3) {
+          evaluate(pNode->child_nodes[2], &temp);
+        }
+        pValue->type = STATEMENTVALUE;
+        pValue->statementValue = "if";
       }
       break;
 
