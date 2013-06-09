@@ -59,8 +59,14 @@ void cal_value(Value* pValue, Value a, Value b, int op_token) {
       case PLUS :     result.intValue = a.intValue +  b.intValue; break;
       case MINUS :    result.intValue = a.intValue -  b.intValue; break;
       case MULTIPLY : result.intValue = a.intValue *  b.intValue; break;
-      case DIVIDE :   if(b.intValue == 0) { *pValue = b; return ;} else {
-                      result.intValue = a.intValue /  b.intValue;} break;
+      case DIVIDE :   if(b.intValue == 0) { 
+                        result.type = ERRORVALUE;
+                        result.errorValue = "Can not divied by zero";
+                      } 
+                      else {
+                        result.intValue = a.intValue /  b.intValue;
+                      } 
+                      break;
       case G_OP :     result.intValue = a.intValue >  b.intValue; break;
       case L_OP :     result.intValue = a.intValue <  b.intValue; break;
       case GE_OP :    result.intValue = a.intValue >= b.intValue; break;
@@ -81,8 +87,13 @@ void cal_value(Value* pValue, Value a, Value b, int op_token) {
       case PLUS :     result.doubleValue = a.doubleValue +  b.doubleValue; break;
       case MINUS :    result.doubleValue = a.doubleValue -  b.doubleValue; break;
       case MULTIPLY : result.doubleValue = a.doubleValue *  b.doubleValue; break;
-      case DIVIDE :   if(b.doubleValue==0.0) {*pValue = b; return ;} else {
-                      result.doubleValue = a.doubleValue /  b.doubleValue;} break;
+      case DIVIDE :   if(b.intValue == 0) { 
+                        result.type = ERRORVALUE;
+                        result.errorValue = "Can not divied by zero";
+                      } else {
+                      result.doubleValue = a.doubleValue /  b.doubleValue;
+                      } 
+                      break;
       case G_OP :     result.doubleValue = a.doubleValue >  b.doubleValue; break;
       case L_OP :     result.doubleValue = a.doubleValue <  b.doubleValue; break;
       case GE_OP :    result.doubleValue = a.doubleValue >= b.doubleValue; break;
