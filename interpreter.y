@@ -45,8 +45,8 @@ statement
 : start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
 | start_of_statement if_statement end_of_statement { $$ = $2; }
 | start_of_statement while_statement end_of_statement { $$ = $2;}
-| error SEMICOLON { print_error("syntax error"); statement_depth = 0;}
-| SEMICOLON {}
+| error SEMICOLON { print_error("syntax error"); statement_depth = 0; init_node(&$$, NTSTATEMENT); }
+| SEMICOLON { printf("???"); init_node(&$$, NTSTATEMENT);}
 ;
 
 start_of_statement
@@ -56,11 +56,11 @@ end_of_statement
 : { statement_depth --;}
 
 expression
-: expression PLUS expression { printf("add operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3);}
-| expression MINUS expression { printf("sub operator reduced.\n");init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
-| expression MULTIPLY expression { printf("mul operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = MULTIPLY; push_child_node($$, $1); push_child_node($$, $3);}
-| expression DIVIDE expression {  printf("div operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = DIVIDE; push_child_node($$, $1); push_child_node($$, $3);}
-| identifier ASSIGN expression { printf("assignement reduced!\n");init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
+: expression PLUS expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = PLUS; push_child_node($$, $1); push_child_node($$, $3);}
+| expression MINUS expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = MINUS; push_child_node($$, $1); push_child_node($$, $3); }
+| expression MULTIPLY expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = MULTIPLY; push_child_node($$, $1); push_child_node($$, $3);}
+| expression DIVIDE expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = DIVIDE; push_child_node($$, $1); push_child_node($$, $3);}
+| identifier ASSIGN expression { init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
 | MINUS expression %prec UMINUS { }
 | LPAREN expression RPAREN { $$ = $2; }
 | INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
@@ -75,7 +75,7 @@ expression
 ;
 
 identifier
-: IDENTIFIER { printf("identifier reduced!\n");init_node(&$$, NTIDENTIFIER); strcpy($$->name, $1); free($1); }
+: IDENTIFIER { init_node(&$$, NTIDENTIFIER); strcpy($$->name, $1); free($1); }
 
 if_statement
 : IF LPAREN expression RPAREN statement_list END { init_node(&$$, NTIFSTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }

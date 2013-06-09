@@ -5,9 +5,24 @@
 #include "node.h"
 #include "y.tab.h"
 
-Value vbltable[1000];
-char idx2stringtable[1000][100];
-int n_of_idx2stringtable = 0;
+#define MAX_VARIABLE_NAME    100
+#define MAX_GLOBAL_VARIABLES 1000
+#define MAX_LOCAL_VARIABLES  100
+#define MAX_FRAME_STACK_SIZE 1000
+
+typedef struct Frame {
+  int idx;
+  int n_of_local_variables;
+  char local_variables_name[MAX_LOCAL_VARIABLES][MAX_VARIABLE_NAME];
+  Value local_variables_value[MAX_LOCAL_VARIABLES];
+} Frame;
+
+Frame frame_stack[MAX_FRAME_STACK_SIZE];
+int top_of_frame_stack = -1;
+
+int n_of_global_variables = 0;
+char global_variables_name[MAX_GLOBAL_VARIABLES][MAX_VARIABLE_NAME];
+Value global_variables_value[MAX_GLOBAL_VARIABLES];
 
 Value get_variable (char* identifier);
 void set_variable (char* identifier, Value value);
@@ -112,17 +127,30 @@ void evaluate(Node* pNode, Value* pValue) {
 }
 
 Value get_variable (char* identifier) {
-  Value value;
   int i;
-  for(i=0;i<n_of_idx2stringtable;i++) {
-    if (strcmp(idx2stringtable[i], identifier) == 0)
+  Value value;
+
+  if (top_of_frame_stack != -1) {
+    Frame* pFrame = &frame_stack[top_of_frame_stack];
+
+    for (i=0;i<pFrame->n_of_local_variables;i++) {
+      if (strcmp(pFrame->local_variables_name[i], identifier) == 0)
+        break;
+    }
+    if (i < pFrame->n_of_local_variables) {
+      value = pFrame->local_variables_value[i];
+    }
+  }
+
+  for (i=0;i<n_of_global_variables;i++) {
+    if (strcmp(global_variables_name[i], identifier) == 0)
       break;
   }
-  if (i == n_of_idx2stringtable) {
+  if (i < n_of_global_variables) {
+    value = global_variables_value[i];
+  } else {
     value.type = ERRORVALUE;
     value.errorValue = "undefined variable error";
-  } else {
-    value = vbltable[i];
   }
 
   return value;
@@ -131,20 +159,31 @@ Value get_variable (char* identifier) {
 
 void set_variable (char* identifier, Value value) {
   int i;
+  Value* pValue;
 
-  printf("ASSIGNMENT - %s = \n", identifier);
-  print_value(&value);
+  if (top_of_frame_stack != -1) {
+    Frame* pFrame = &frame_stack[top_of_frame_stack];
+    for (i=0;i<pFrame->n_of_local_variables;i++) {
+      if (strcmp(pFrame->local_variables_name[i], identifier) == 0)
+        break;
+    }
+    if (i < pFrame->n_of_local_variables) {
+      pValue = &pFrame->local_variables_value[i];
+    }
+  }
 
-  for(i=0;i<n_of_idx2stringtable;i++) {
-    if (strcmp(idx2stringtable[i], identifier) == 0)
+  for (i=0;i<n_of_global_variables;i++) {
+    if (strcmp(global_variables_name[i], identifier) == 0)
       break;
   }
-
-  if (i == n_of_idx2stringtable) {
-    printf("registerd...\n");
-    strcpy(idx2stringtable[n_of_idx2stringtable], identifier);
-    n_of_idx2stringtable++;
+  if (i < n_of_global_variables) {
+    pValue = &global_variables_value[i];
+  } else {
+    printf("global registerd...\n");
+    strcpy(global_variables_name[n_of_global_variables], identifier);
+    pValue = &global_variables_value[n_of_global_variables];
+    n_of_global_variables++;
   }
 
-  vbltable[i] = value;
+  *pValue = value;
 }
