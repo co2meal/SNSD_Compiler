@@ -28,7 +28,7 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier statement_list if_statement while_statement function_def_statement parameter_list
+%type <pNode> expression statement identifier statement_list if_statement while_statement function_def_statement parameter_list statements parameters
 %%
 
 program
@@ -37,15 +37,20 @@ program
 ;
 
 statement_list
-: statement { init_node(&$$, NTSTATEMENTLIST); push_child_node($$, $1); }
-| statement_list statement { $$ = $1; push_child_node($$, $2); }
+: { init_node(&$$, NTSTATEMENTLIST); }
+| statements { $$ = $1; }
+
+statements
+: { init_node(&$$, NTSTATEMENTLIST); }
+| statement { init_node(&$$, NTSTATEMENTLIST); push_child_node($$, $1); }
+| statements statement { $$ = $1; push_child_node($$, $2); }
 ;
 
 statement
 : start_of_statement expression SEMICOLON end_of_statement { init_node(&$$, NTSTATEMENT); push_child_node($$, $2); }
 | start_of_statement if_statement end_of_statement { $$ = $2; }
-| start_of_statement while_statement end_of_statement { $$ = $2;}
-| start_of_statement function_def_statement end_of_statement {}
+| start_of_statement while_statement end_of_statement { $$ = $2; }
+| start_of_statement function_def_statement end_of_statement { $$ = $2; }
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0; init_node(&$$, NTSTATEMENT); }
 | SEMICOLON { init_node(&$$, NTSTATEMENT);}
 ;
@@ -80,7 +85,7 @@ identifier
 
 if_statement
 : IF LPAREN expression RPAREN statement_list END { init_node(&$$, NTIFSTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
-| IF LPAREN expression RPAREN statement_list ELSE statement_list END
+| IF LPAREN expression RPAREN statement_list ELSE statement_list END {}
 
 while_statement
 : WHILE LPAREN expression RPAREN statement_list END { init_node(&$$, NTWHILESTATEMENT); push_child_node($$, $3); push_child_node($$, $5); }
@@ -89,15 +94,18 @@ function_def_statement
 : DEF identifier LPAREN parameter_list RPAREN statement_list END { init_node(&$$, NTFUNCDECLARE); push_child_node($$, $2); push_child_node($$, $4);push_child_node($$, $6); }
 
 parameter_list
+: { init_node(&$$, NTPARAMETERLIST); }
+| parameters { $$ = $1; }
+
+parameters
 : identifier { init_node(&$$, NTPARAMETERLIST); push_child_node($$, $1); }
-| parameter_list COMMA identifier { $$ = $1; push_child_node($$, $3); }
+| parameters COMMA identifier { $$ = $1; push_child_node($$, $3); }
 ;
 
 %%
 
 int main()
 {
-  printf("%d\n", (int)sizeof(Node));
 	yyparse();
 	
 	return 0;

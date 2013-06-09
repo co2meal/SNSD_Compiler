@@ -12,6 +12,8 @@ void print_value(Value* pValue) {
     printf("STATEMENTVALUE-%s\n", pValue->statementValue);
   } else if (pValue->type == ERRORVALUE) {
     printf("ERRORVALUE-%s\n", pValue->errorValue);
+  } else if (pValue->type == FUNCTIONVALUE) {
+    printf("FUNCTIONVALUE-????\n");
   } else {
     printf("UNKNOWNVALUE-T.T-%d\n", pValue->type);
   }

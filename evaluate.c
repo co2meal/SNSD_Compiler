@@ -3,6 +3,7 @@
 
 #include "value.h"
 #include "node.h"
+#include "function.h"
 #include "y.tab.h"
 
 #define MAX_VARIABLE_NAME    100
@@ -15,6 +16,7 @@ typedef struct Frame {
   int n_of_local_variables;
   char local_variables_name[MAX_LOCAL_VARIABLES][MAX_VARIABLE_NAME];
   Value local_variables_value[MAX_LOCAL_VARIABLES];
+  Value* pReturnValue;
 } Frame;
 
 Frame frame_stack[MAX_FRAME_STACK_SIZE];
@@ -122,15 +124,23 @@ void evaluate(Node* pNode, Value* pValue) {
 
           printf("AAAA  - %d\n", test.intValue);
           evaluate(pNode->child_nodes[1], &temp);
-        } 
+        }
 
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "while";
       }
+      break;
     case  NTFUNCDECLARE:
-    {
-
-    } 
+      {
+        Function* pFn;
+        Value value;
+        pFn = create_function(pNode->child_nodes[1], pNode->child_nodes[2]);
+        value.type = FUNCTIONVALUE;
+        value.functionValue = pFn;
+        set_variable(pNode->child_nodes[0]->name, value);
+        pValue->type = STATEMENTVALUE;
+        pValue->statementValue = "a function is defined.";
+      }
       break;
 
     default:

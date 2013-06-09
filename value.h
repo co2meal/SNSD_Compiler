@@ -1,4 +1,6 @@
-typedef enum { INTVALUE = 1000, DOUBLEVALUE, STATEMENTVALUE, ERRORVALUE } tagValueType;
+struct Function;
+
+typedef enum { INTVALUE = 1000, DOUBLEVALUE, STATEMENTVALUE, FUNCTIONVALUE, ERRORVALUE } tagValueType;
 
 typedef struct Value {
   tagValueType type;
@@ -7,5 +9,6 @@ typedef struct Value {
     double doubleValue;
     char* statementValue;
     char* errorValue;
+    struct Function* functionValue;
   };
 } Value;
