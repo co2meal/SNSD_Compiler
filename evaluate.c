@@ -11,6 +11,8 @@
 #define MAX_LOCAL_VARIABLES  100
 #define MAX_FRAME_STACK_SIZE 1000
 
+char* getValueType(tagValueType type); 
+
 typedef struct Frame {
   int idx;
   int n_of_local_variables;
@@ -34,6 +36,7 @@ void evaluate(Node* pNode, Value* pValue) {
   switch(pNode->type) {
     case NTINTEGER:
       printf("pNode->value.type: %d\n", (int)pNode->value.type);
+      printf("pNode->value.type: %s\n", getValueType(pNode->value.type));
       printf("pNode->value.intValue: %d\n", pNode->value.intValue);
       *pValue = pNode->value;
       break;
@@ -99,18 +102,13 @@ void evaluate(Node* pNode, Value* pValue) {
     case NTIFSTATEMENT:
       {
         Value test, temp;
-        printf("called 0 \n");
         evaluate(pNode->child_nodes[0], &temp);
         test_value(&test, temp);
 
-        printf("called 1 \n");
         if ( (test.type == INTVALUE) && (test.intValue == 1) ) {
           evaluate(pNode->child_nodes[1], &temp);
         } else if (pNode->n_of_child_nodes == 3) {
           evaluate(pNode->child_nodes[2], &temp);
-        }
-        else {
-          printf("called\n");
         }
 
         pValue->type = STATEMENTVALUE;
@@ -214,4 +212,14 @@ void set_variable (char* identifier, Value value) {
   }
 
   *pValue = value;
+}
+
+char* getValueType(tagValueType type) {
+  switch(type) {
+    case INTVALUE: return "Integer value";
+    case DOUBLEVALUE: return "Double value";
+    case STATEMENTVALUE: return "statement value";
+    case FUNCTIONVALUE: return "Function value";
+    case ERRORVALUE: return "Error value";
+  }
 }

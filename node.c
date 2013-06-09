@@ -4,6 +4,8 @@
 #include "value.h"
 #include "node.h"
 
+char* getNodeType(tagNodeType type);
+
 void init_node(Node** ppNode, tagNodeType type) {
   *ppNode = (Node*)malloc((size_t) sizeof (Node));
   (*ppNode)->type = type;
@@ -15,10 +17,31 @@ void push_child_node(Node* pNode, Node* pChildNode) {
 }
 
 void print_node(Node* pNode) {
-  printf("node type = %d\n", (int)(pNode->type));
+  printf("node type = %s\n", getNodeType(pNode->type));
 
   if (pNode->type == NTIDENTIFIER) {
     printf("  node name = %s\n", pNode->name);
   }
   // printf("node value intvalue = %d\n", $2.value.intValue);
 }
+
+char* getNodeType(tagNodeType type) {
+
+	switch(type) {
+		case NTIDENTIFIER: return "Identifier";
+		case NTASSIGNMENT: return "Assignment";
+		case NTIFSTATEMENT: return "If Statement";
+		case NTWHILESTATEMENT: return "While Statement";
+		case NTEXPRESSION: return "Expression";
+		case NTBINARYOPERATOR: return "Binary Operator";
+		case NTUNARYOPERATOR: return "Unary Operator";
+		case NTINTEGER: return "Integer";
+		case NTDOUBLE: return "Double";
+		case NTFUNCDECLARE: return "Function Declaration";
+		case NTPARAMETERLIST: return "Parameter List";
+		default:
+			return "unkonwn\n";		
+			break;
+	}
+}
+
