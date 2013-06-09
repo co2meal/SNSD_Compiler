@@ -16,6 +16,29 @@ void print_value(Value* pValue) {
     printf("UNKNOWNVALUE-T.T-%d\n", pValue->type);
   }
 }
+
+void cal_uminus (Value* pValue, Value a)
+{
+  if(a.type == ERRORVALUE)
+  {
+    *pValue = a;
+    return ;
+  }
+  else
+  {
+    if(a.type == INTVALUE)
+     {
+       pValue->type = INTVALUE;
+       pValue->intValue = a.intValue * -1;
+     }
+     else
+     {
+      pValue->type = DOUBLEVALUE;
+      pValue->doubleValue = a.doubleValue * -1;
+     }
+  }
+}
+
 void cal_value(Value* pValue, Value a, Value b, int op_token) {
   Value result;
   if (a.type == ERRORVALUE) {
@@ -26,8 +49,6 @@ void cal_value(Value* pValue, Value a, Value b, int op_token) {
     *pValue = b;
     return;
   }
-
-
 
   if (a.type == INTVALUE && b.type == INTVALUE) {
     result.type = INTVALUE;
@@ -88,214 +109,3 @@ void test_value(Value* pValue, Value a) {
 
   *pValue = result;
 }
-
-/*
-void add_value(Value* pValue, Value a, Value b) {
-  Value result;
-  if (a.type == ERRORVALUE) {
-    *pValue = a;
-    return;
-  }
-  if (b.type == ERRORVALUE) {
-    *pValue = b;
-    return;
-  }
-
-  if (a.type == INTVALUE && b.type == INTVALUE) {
-    result.type = INTVALUE;
-    result.intValue = a.intValue + b.intValue;
-  } else {
-    if (a.type == INTVALUE) {
-      a.type = DOUBLEVALUE;
-      a.doubleValue = (double)a.intValue;
-    }
-    if (b.type == INTVALUE) {
-      b.type = DOUBLEVALUE;
-      b.doubleValue = (double)b.intValue;
-    }
-
-    result.type = DOUBLEVALUE;
-    result.doubleValue = a.doubleValue + b.doubleValue;
-  }
-
-  *pValue = result;
-}
-
-void sub_value(Value* pValue, Value a, Value b) {
-  Value result;
-  if (a.type == ERRORVALUE) {
-    *pValue = a;
-    return;
-  }
-  if (b.type == ERRORVALUE) {
-    *pValue = b;
-    return;
-  }
-
-  if (a.type == INTVALUE && b.type == INTVALUE) {
-    result.type = INTVALUE;
-    result.intValue = a.intValue - b.intValue;
-  } else {
-    if (a.type == INTVALUE) {
-      a.type = DOUBLEVALUE;
-      a.doubleValue = (double)a.intValue;
-    }
-    if (b.type == INTVALUE) {
-      b.type = DOUBLEVALUE;
-      b.doubleValue = (double)b.intValue;
-    }
-
-    result.type = DOUBLEVALUE;
-    result.doubleValue = a.doubleValue - b.doubleValue;
-  }
-
-  *pValue = result;
-}
-
-void mul_value(Value* pValue, Value a, Value b) {
-  Value result;
-  if (a.type == ERRORVALUE) {
-    *pValue = a;
-    return;
-  }
-  if (b.type == ERRORVALUE) {
-    *pValue = b;
-    return;
-  }
-
-  if (a.type == INTVALUE && b.type == INTVALUE) {
-    result.type = INTVALUE;
-    result.intValue = a.intValue * b.intValue;
-  } else {
-    if (a.type == INTVALUE) {
-      a.type = DOUBLEVALUE;
-      a.doubleValue = (double)a.intValue;
-    }
-    if (b.type == INTVALUE) {
-      b.type = DOUBLEVALUE;
-      b.doubleValue = (double)b.intValue;
-    }
-
-    result.type = DOUBLEVALUE;
-    result.doubleValue = a.doubleValue * b.doubleValue;
-  }
-
-  *pValue = result;
-}
-
-void div_value(Value* pValue, Value a, Value b) {
-  Value result;
-  if (a.type == ERRORVALUE) {
-    *pValue = a;
-    return;
-  }
-  if (b.type == ERRORVALUE) {
-    *pValue = b;
-    return;
-  }
-
-  if (a.type == INTVALUE && b.type == INTVALUE) {
-    result.type = INTVALUE;
-    if(b.intValue ==0)
-      result.intValue = 0; 
-    else
-      result.intValue = a.intValue / b.intValue;
-  } else {
-    if (a.type == INTVALUE) {
-      a.type = DOUBLEVALUE;
-      a.doubleValue = (double)a.intValue;
-    }
-    if (b.type == INTVALUE) {
-      b.type = DOUBLEVALUE;
-      b.doubleValue = (double)b.intValue;
-    }
-
-    result.type = DOUBLEVALUE;
-    if(b.doubleValue == 0.0)
-      result.doubleValue = 0.0;
-    else
-      result.doubleValue = a.doubleValue / b.doubleValue;
-  }
-
-  *pValue = result;
-}
-*/
-
-/*
-void calculate_value(Value* pValue, Value a, Value b, int op) {
-
-  Value result;
-  if (a.type == ERRORVALUE) {
-    *pValue = a;
-    return;
-  }
-  if (b.type == ERRORVALUE) {
-    *pValue = b;
-    return;
-  }
-
-  if (a.type == INTVALUE && b.type == INTVALUE) {
-    result.type = INTVALUE;
-    
-    switch(op) {
-      case PLUS:
-        result.intValue = a.intValue + b.intValue;
-        break;
-      case MINUS:
-        result.intValue = a.intValue - b.intValue;
-        break;
-      case MULTIPLY:
-        result.intValue = a.intValue * b.intValue;
-        break;
-      case DIVIDE:
-        if (b.intValue == 0) {
-          printf("error: can not divide by zero\n");
-          break;
-        }
-        result.type = DOUBLEVALUE;
-        result.doubleValue = (double)a.intValue / (double)b.intValue;
-        break;
-
-      default:
-        printf("unknown operator\n");
-        break;
-    }
-    
-  } else {
-    if (a.type == INTVALUE) {
-      a.type = DOUBLEVALUE;
-      a.doubleValue = (double)a.intValue;
-    }
-    if (b.type == INTVALUE) {
-      b.type = DOUBLEVALUE;
-      b.doubleValue = (double)b.intValue;
-    }
-
-    result.type = DOUBLEVALUE;
-    switch(op) {
-      case PLUS:
-        result.doubleValue = a.doubleValue + b.doubleValue;
-        break;
-      case MINUS:
-        result.doubleValue = a.doubleValue - b.doubleValue;
-        break;
-      case MULTIPLY:
-        result.doubleValue = a.doubleValue * b.doubleValue;
-        break;
-      case DIVIDE:
-        if (b.doubleValue == 0) {
-          printf("error: can not divide by zero\n");
-          break;
-        }        
-        result.doubleValue = a.doubleValue / b.doubleValue;
-        break;
-
-      default:
-        printf("unknown operator\n");
-        break;
-    }
-  }
-
-  *pValue = result;
-}
-*/

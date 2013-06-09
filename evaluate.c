@@ -53,6 +53,14 @@ void evaluate(Node* pNode, Value* pValue) {
       }
       break;
 
+    case NTUNARYOPERATOR :
+    {
+        Value a;
+        evaluate(pNode->child_nodes[0], &a);
+        cal_uminus (pValue, a);
+    }
+    break;
+
     case NTBINARYOPERATOR:
       {
         Value a, b;
@@ -121,7 +129,7 @@ void evaluate(Node* pNode, Value* pValue) {
       }
     case  NTFUNCDECLARE:
     {
-      
+
     } 
       break;
 
