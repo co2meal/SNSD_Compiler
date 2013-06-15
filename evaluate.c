@@ -145,6 +145,21 @@ void evaluate(Node* pNode, Value* pValue) {
       }
       break;
 
+    case NTLOCALSTATEMENT:
+      {
+        int i;
+        Node* parameter_list = pNode->child_nodes[0];
+
+        for(i=0;i<parameter_list->n_of_child_nodes;i++) {
+          char* identifier = parameter_list->child_nodes[i]->name;
+          register_local_frame(&frame_stack[top_of_frame_stack], identifier);
+        }
+        pValue->type = STATEMENTVALUE;
+        pValue->statementValue = "local variables are defined.";
+
+      }
+      break;
+
     case NTFUNCCALL:
       {
         int i;
@@ -169,7 +184,9 @@ void evaluate(Node* pNode, Value* pValue) {
           top_of_frame_stack ++;
           return_count ++;
           init_frame(&frame_stack[top_of_frame_stack], pValue, pFn, expression_list);
-          evaluate(statement_list, &temp);
+          if (pValue->type != ERRORVALUE) {
+            evaluate(statement_list, &temp);
+          }
           top_of_frame_stack --;
           return_count = top_of_frame_stack;
         }
@@ -184,6 +201,7 @@ void evaluate(Node* pNode, Value* pValue) {
 Value get_variable (char* identifier) {
   int i;
   Value value;
+  int found = 0;
 
   if (top_of_frame_stack != -1) {
     Frame* pFrame = &frame_stack[top_of_frame_stack];
@@ -194,27 +212,29 @@ Value get_variable (char* identifier) {
     }
     if (i < pFrame->n_of_local_variables) {
       value = pFrame->local_variables_value[i];
+      found = 1;
     }
   }
 
-  for (i=0;i<n_of_global_variables;i++) {
-    if (strcmp(global_variables_name[i], identifier) == 0)
-      break;
+  if(!found) {
+    for (i=0;i<n_of_global_variables;i++) {
+      if (strcmp(global_variables_name[i], identifier) == 0)
+        break;
+    }
+    if (i < n_of_global_variables) {
+      value = global_variables_value[i];
+    } else {
+      value.type = ERRORVALUE;
+      value.errorValue = "undefined variable error";
+    }
   }
-  if (i < n_of_global_variables) {
-    value = global_variables_value[i];
-  } else {
-    value.type = ERRORVALUE;
-    value.errorValue = "undefined variable error";
-  }
-
   return value;
 }
 
 
 void set_variable (char* identifier, Value value) {
   int i;
-  Value* pValue;
+  Value* pValue = NULL;
 
   if (top_of_frame_stack != -1) {
     Frame* pFrame = &frame_stack[top_of_frame_stack];
@@ -227,17 +247,19 @@ void set_variable (char* identifier, Value value) {
     }
   }
 
-  for (i=0;i<n_of_global_variables;i++) {
-    if (strcmp(global_variables_name[i], identifier) == 0)
-      break;
-  }
-  if (i < n_of_global_variables) {
-    pValue = &global_variables_value[i];
-  } else {
-    printf("global registerd...\n");
-    strcpy(global_variables_name[n_of_global_variables], identifier);
-    pValue = &global_variables_value[n_of_global_variables];
-    n_of_global_variables++;
+  if (pValue == NULL) {
+    for (i=0;i<n_of_global_variables;i++) {
+      if (strcmp(global_variables_name[i], identifier) == 0)
+        break;
+    }
+    if (i < n_of_global_variables) {
+      pValue = &global_variables_value[i];
+    } else {
+      printf("global registerd...\n");
+      strcpy(global_variables_name[n_of_global_variables], identifier);
+      pValue = &global_variables_value[n_of_global_variables];
+      n_of_global_variables++;
+    }
   }
 
   *pValue = value;

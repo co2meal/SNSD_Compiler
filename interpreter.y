@@ -16,7 +16,7 @@ int statement_depth = 0;
 }
 
 %token<string> IDENTIFIER INTEGER DOUBLE
-%token IF ELSE WHILE END DEF
+%token IF ELSE WHILE END DEF LOCAL
 %token RETURN SEMICOLON ASSIGN
 %token PLUS MINUS DIVIDE MULTIPLY
 %token LPAREN RPAREN COMMA
@@ -28,7 +28,7 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier statement_list if_statement while_statement return_statement function_def_statement parameter_list statements parameters expression_list expressions
+%type <pNode> expression statement identifier statement_list if_statement while_statement return_statement function_def_statement parameter_list statements parameters expression_list expressions local_statement
 %%
 
 program
@@ -52,6 +52,7 @@ statement
 | start_of_statement while_statement end_of_statement { $$ = $2; }
 | start_of_statement function_def_statement end_of_statement { $$ = $2; }
 | start_of_statement return_statement end_of_statement { $$ = $2; }
+| start_of_statement local_statement end_of_statement { $$ = $2; }
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0; init_node(&$$, NTSTATEMENT); }
 | SEMICOLON { init_node(&$$, NTSTATEMENT);}
 ;
@@ -106,6 +107,9 @@ function_def_statement
 
 return_statement
 : RETURN expression SEMICOLON { init_node(&$$, NTRETURNSTATEMENT); push_child_node($$, $2); }
+
+local_statement
+: LOCAL parameters SEMICOLON { init_node(&$$, NTLOCALSTATEMENT); push_child_node($$, $2); }
 
 parameter_list
 : { init_node(&$$, NTPARAMETERLIST); }

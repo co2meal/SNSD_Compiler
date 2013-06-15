@@ -19,10 +19,11 @@ void register_local_frame(Frame* pFrame, char* identifier) {
 
 void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* expression_list) {
   int i;
-  printf("hello \n");
+  printf("init_frame start\n");
 
   pFrame->n_of_local_variables = 0;
   pFrame->pReturnValue = pReturnValue;
+  pReturnValue->type = INTVALUE; // only for default type...
 
 
   // TODO(co2meal): handle error when different expression_list length and parameter_list length
@@ -32,11 +33,9 @@ void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* express
     return;
   }
 
-  printf("haha %d\n", pFn->parameter_list->n_of_child_nodes);
   for(i=0; i < pFn->parameter_list->n_of_child_nodes; i++) {
     Value value;
     char* identifier = pFn->parameter_list->child_nodes[i]->name;
-    printf("hello \n");
     register_local_frame(pFrame, identifier);
 
     evaluate(expression_list->child_nodes[i], &value);

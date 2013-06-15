@@ -72,6 +72,7 @@ static int get_input(char *buf, int size)
 "while"  { return(WHILE); }
 "end"    { return(END);}
 "def"    { return (DEF);}
+"local"  { return (LOCAL);}
 ","      { return (COMMA);}
 "$"      { return 0; /* end of input */ }
 [_A-Za-z][_A-Za-z0-9]* { yylval.string = (char*) malloc(yyleng * sizeof(char)); strcpy(yylval.string, yytext); return IDENTIFIER; }
