@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "value.h"
@@ -18,13 +19,18 @@ void register_local_frame(Frame* pFrame, char* identifier) {
 
 void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* expression_list) {
   int i;
-    printf("hello \n");
+  printf("hello \n");
 
   pFrame->n_of_local_variables = 0;
   pFrame->pReturnValue = pReturnValue;
-    printf("hello \n");
+
 
   // TODO(co2meal): handle error when different expression_list length and parameter_list length
+  if (pFn->parameter_list->n_of_child_nodes != expression_list->n_of_child_nodes) {
+    pReturnValue->type = ERRORVALUE;
+    pReturnValue->errorValue = "parameter length is different error";
+    return;
+  }
 
   printf("haha %d\n", pFn->parameter_list->n_of_child_nodes);
   for(i=0; i < pFn->parameter_list->n_of_child_nodes; i++) {

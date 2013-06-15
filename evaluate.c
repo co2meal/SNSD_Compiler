@@ -11,6 +11,7 @@ char* getValueType(tagValueType type);
 
 Frame frame_stack[MAX_FRAME_STACK_SIZE];
 int top_of_frame_stack = -1;
+int return_count = -1;
 
 int n_of_global_variables = 0;
 char global_variables_name[MAX_GLOBAL_VARIABLES][MAX_VARIABLE_NAME];
@@ -18,13 +19,12 @@ Value global_variables_value[MAX_GLOBAL_VARIABLES];
 
 Value get_variable (char* identifier);
 void set_variable (char* identifier, Value value);
-
 void evaluate(Node* pNode, Value* pValue) {
+  if (return_count != top_of_frame_stack) return;
   print_node(pNode);
   switch(pNode->type) {
     case NTINTEGER:
       printf("pNode->value.type: %d\n", (int)pNode->value.type);
-      printf("pNode->value.type: %s\n", getValueType(pNode->value.type));
       printf("pNode->value.intValue: %d\n", pNode->value.intValue);
       *pValue = pNode->value;
       break;
@@ -122,6 +122,7 @@ void evaluate(Node* pNode, Value* pValue) {
         pValue->statementValue = "while";
       }
       break;
+
     case  NTFUNCDECLARE:
       {
         Function* pFn;
@@ -133,6 +134,14 @@ void evaluate(Node* pNode, Value* pValue) {
         set_variable(pNode->child_nodes[0]->name, value);
         pValue->type = STATEMENTVALUE;
         pValue->statementValue = "a function is defined.";
+      }
+      break;
+
+    case NTRETURNSTATEMENT:
+
+      {
+        evaluate(pNode->child_nodes[0], frame_stack[top_of_frame_stack].pReturnValue);
+        return_count --;
       }
       break;
 
@@ -151,12 +160,18 @@ void evaluate(Node* pNode, Value* pValue) {
           pValue->errorValue = "no function name error";
         } else {
           Value temp;
-
           pFn = value.functionValue;
-          top_of_frame_stack ++;
-          init_frame(&frame_stack[top_of_frame_stack], pValue, pFn, expression_list);
+          statement_list = pFn->statement_list;
 
+          pValue->type = ERRORVALUE;
+          pValue->errorValue = "nothing is returned";
+
+          top_of_frame_stack ++;
+          return_count ++;
+          init_frame(&frame_stack[top_of_frame_stack], pValue, pFn, expression_list);
           evaluate(statement_list, &temp);
+          top_of_frame_stack --;
+          return_count = top_of_frame_stack;
         }
       }
       break;

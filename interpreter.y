@@ -28,7 +28,7 @@ int statement_depth = 0;
 %left MULTIPLY DIVIDE
 %nonassoc UMINUS
 
-%type <pNode> expression statement identifier statement_list if_statement while_statement function_def_statement parameter_list statements parameters expression_list expressions
+%type <pNode> expression statement identifier statement_list if_statement while_statement return_statement function_def_statement parameter_list statements parameters expression_list expressions
 %%
 
 program
@@ -51,6 +51,7 @@ statement
 | start_of_statement if_statement end_of_statement { $$ = $2; }
 | start_of_statement while_statement end_of_statement { $$ = $2; }
 | start_of_statement function_def_statement end_of_statement { $$ = $2; }
+| start_of_statement return_statement end_of_statement { $$ = $2; }
 | error SEMICOLON { print_error("syntax error"); statement_depth = 0; init_node(&$$, NTSTATEMENT); }
 | SEMICOLON { init_node(&$$, NTSTATEMENT);}
 ;
@@ -102,6 +103,9 @@ while_statement
 
 function_def_statement
 : DEF identifier LPAREN parameter_list RPAREN statement_list END { init_node(&$$, NTFUNCDECLARE); push_child_node($$, $2); push_child_node($$, $4);push_child_node($$, $6); }
+
+return_statement
+: RETURN expression SEMICOLON { init_node(&$$, NTRETURNSTATEMENT); push_child_node($$, $2); }
 
 parameter_list
 : { init_node(&$$, NTPARAMETERLIST); }
