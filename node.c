@@ -17,10 +17,10 @@ void push_child_node(Node* pNode, Node* pChildNode) {
 }
 
 void print_node(Node* pNode) {
-  printf("node type = %s\n", getNodeType(pNode->type));
+  // printf("node type = %s\n", getNodeType(pNode->type));
 
   if (pNode->type == NTIDENTIFIER) {
-    printf("  node name = %s\n", pNode->name);
+    // printf("  node name = %s\n", pNode->name);
   }
   // printf("node value intvalue = %d\n", $2.value.intValue);
 }

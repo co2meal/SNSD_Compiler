@@ -6,11 +6,14 @@
 #include "function.h"
 #include "frame.h"
 
+extern int top_of_frame_stack, return_count;
+
+
 void register_local_frame(Frame* pFrame, char* identifier) {
   int idx = pFrame->n_of_local_variables;
   Value value;
   value.type = ERRORVALUE;
-  value.errorValue = "undefined variable error";
+  value.errorValue = "uninitialized variable error";
 
   strcpy(pFrame->local_variables_name[idx], identifier);
   pFrame->local_variables_value[idx] = value;
@@ -19,7 +22,7 @@ void register_local_frame(Frame* pFrame, char* identifier) {
 
 void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* expression_list) {
   int i;
-  printf("init_frame start\n");
+  // printf("init_frame start\n");
 
   pFrame->n_of_local_variables = 0;
   pFrame->pReturnValue = pReturnValue;
@@ -38,7 +41,13 @@ void init_frame(Frame* pFrame, Value* pReturnValue, Function* pFn, Node* express
     char* identifier = pFn->parameter_list->child_nodes[i]->name;
     register_local_frame(pFrame, identifier);
 
+    top_of_frame_stack--;
+    return_count --;
     evaluate(expression_list->child_nodes[i], &value);
+    top_of_frame_stack++;
+    return_count ++;
+
+    // print_value(&value);
     set_variable(identifier, value);
   }
 

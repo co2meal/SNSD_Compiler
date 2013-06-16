@@ -24,8 +24,8 @@ void evaluate(Node* pNode, Value* pValue) {
   print_node(pNode);
   switch(pNode->type) {
     case NTINTEGER:
-      printf("pNode->value.type: %d\n", (int)pNode->value.type);
-      printf("pNode->value.intValue: %d\n", pNode->value.intValue);
+      // printf("pNode->value.type: %d\n", (int)pNode->value.type);
+      // printf("pNode->value.intValue: %d\n", pNode->value.intValue);
       *pValue = pNode->value;
       break;
 
@@ -114,7 +114,7 @@ void evaluate(Node* pNode, Value* pValue) {
 
           if (!(test.type == INTVALUE && test.intValue)) break;
 
-          printf("AAAA  - %d\n", test.intValue);
+          // printf("AAAA  - %d\n", test.intValue);
           evaluate(pNode->child_nodes[1], &temp);
         }
 
@@ -194,7 +194,8 @@ void evaluate(Node* pNode, Value* pValue) {
       break;
 
     default:
-      printf("not evaluated...\n");
+      // printf("not evaluated...\n");
+      break;
   }
 }
 
@@ -207,6 +208,7 @@ Value get_variable (char* identifier) {
     Frame* pFrame = &frame_stack[top_of_frame_stack];
 
     for (i=0;i<pFrame->n_of_local_variables;i++) {
+      // printf("local finding... %s and %s\n", pFrame->local_variables_name[i], identifier);
       if (strcmp(pFrame->local_variables_name[i], identifier) == 0)
         break;
     }
@@ -218,16 +220,22 @@ Value get_variable (char* identifier) {
 
   if(!found) {
     for (i=0;i<n_of_global_variables;i++) {
-      if (strcmp(global_variables_name[i], identifier) == 0)
+      // printf("global finding... %s and %s\n", global_variables_name[i], identifier);
+      if (strcmp(global_variables_name[i], identifier) == 0){
+        // printf("found!!\n");
         break;
+      }
     }
     if (i < n_of_global_variables) {
       value = global_variables_value[i];
     } else {
+      // printf("why undefined!?\n");
       value.type = ERRORVALUE;
       value.errorValue = "undefined variable error";
     }
   }
+
+  // print_value(&value);
   return value;
 }
 
@@ -235,6 +243,10 @@ Value get_variable (char* identifier) {
 void set_variable (char* identifier, Value value) {
   int i;
   Value* pValue = NULL;
+
+
+  // printf("set %s as : \n", identifier);
+  // print_value(&value);
 
   if (top_of_frame_stack != -1) {
     Frame* pFrame = &frame_stack[top_of_frame_stack];
@@ -255,7 +267,7 @@ void set_variable (char* identifier, Value value) {
     if (i < n_of_global_variables) {
       pValue = &global_variables_value[i];
     } else {
-      printf("global registerd...\n");
+      // printf("global registered...\n");
       strcpy(global_variables_name[n_of_global_variables], identifier);
       pValue = &global_variables_value[n_of_global_variables];
       n_of_global_variables++;

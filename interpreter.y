@@ -32,7 +32,7 @@ int statement_depth = 0;
 %%
 
 program
-: statement { Value value; evaluate($1, &value); printf(" type of value = %d\n", value.type);print_value(&value); }
+: statement { Value value; evaluate($1, &value); print_value(&value); }
 | program statement { Value value; evaluate($2, &value); print_value(&value); }
 ;
 
@@ -78,18 +78,18 @@ expression
 | expression MULTIPLY expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = MULTIPLY; push_child_node($$, $1); push_child_node($$, $3);}
 | expression DIVIDE expression   { init_node(&$$, NTBINARYOPERATOR); $$->op_token = DIVIDE; push_child_node($$, $1); push_child_node($$, $3);}
 | identifier ASSIGN expression   { init_node(&$$, NTASSIGNMENT); push_child_node($$, $1); push_child_node($$, $3);}
-| MINUS expression %prec UMINUS { printf("unary operator reduced.\n"); init_node(&$$, NTUNARYOPERATOR); $$->op_token = UMINUS; push_child_node($$, $2);  }
+| MINUS expression %prec UMINUS { init_node(&$$, NTUNARYOPERATOR); $$->op_token = UMINUS; push_child_node($$, $2);  }
 | LPAREN expression RPAREN { $$ = $2; }
-| INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1); printf("$$->value.intValue: %d\n", $$->value.intValue);}
-| DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1); printf("$$->value.doubleValue: %lf\n", $$->value.doubleValue);}
+| INTEGER { init_node(&$$, NTINTEGER); $$->value.type = INTVALUE; $$->value.intValue = atoi($1); free($1);}
+| DOUBLE { init_node(&$$, NTDOUBLE); $$->value.type = DOUBLEVALUE; $$->value.doubleValue = atof($1); free($1);}
 | identifier
 | identifier LPAREN expression_list RPAREN { init_node(&$$, NTFUNCCALL); push_child_node($$, $1); push_child_node($$, $3); }
-| expression G_OP expression  {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = G_OP; push_child_node($$, $1); push_child_node($$, $3);}
-| expression L_OP expression  {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = L_OP; push_child_node($$, $1); push_child_node($$, $3);}
-| expression LE_OP expression {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = LE_OP; push_child_node($$, $1); push_child_node($$, $3);}
-| expression GE_OP expression {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = GE_OP; push_child_node($$, $1); push_child_node($$, $3);}
-| expression EQ_OP expression {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = EQ_OP; push_child_node($$, $1); push_child_node($$, $3);}
-| expression NE_OP expression {  printf("compare operator reduced.\n"); init_node(&$$, NTBINARYOPERATOR); $$->op_token = NE_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression G_OP expression  { init_node(&$$, NTBINARYOPERATOR); $$->op_token = G_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression L_OP expression  { init_node(&$$, NTBINARYOPERATOR); $$->op_token = L_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression LE_OP expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = LE_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression GE_OP expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = GE_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression EQ_OP expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = EQ_OP; push_child_node($$, $1); push_child_node($$, $3);}
+| expression NE_OP expression { init_node(&$$, NTBINARYOPERATOR); $$->op_token = NE_OP; push_child_node($$, $1); push_child_node($$, $3);}
 ;
 
 identifier
