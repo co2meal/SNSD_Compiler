@@ -5,17 +5,17 @@
 
 void print_value(Value* pValue) { 
   if (pValue->type == INTVALUE) {
-    printf("INTVALUE-%d\n", pValue->intValue);
+    printf("%d\n", pValue->intValue);
   } else if (pValue->type == DOUBLEVALUE) {
-    printf("DOUBLEVALUE-%g\n", pValue->doubleValue);
+    printf("%g\n", pValue->doubleValue);
   } else if (pValue->type == STATEMENTVALUE) {
-    printf("STATEMENTVALUE-%s\n", pValue->statementValue);
+    printf("%s\n", pValue->statementValue);
   } else if (pValue->type == ERRORVALUE) {
-    printf("ERRORVALUE-%s\n", pValue->errorValue);
+    printf("%s\n", pValue->errorValue);
   } else if (pValue->type == FUNCTIONVALUE) {
-    printf("FUNCTIONVALUE-????\n");
+    printf("function\n");
   } else {
-    printf("UNKNOWNVALUE-T.T-%d\n", pValue->type);
+    printf("unknown-%d\n", pValue->type);
   }
 }
 
